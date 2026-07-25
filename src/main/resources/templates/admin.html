@@ -1,0 +1,633 @@
+<!--
+=========================================================
+* Soft UI Dashboard 3 - v1.1.0
+=========================================================
+* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
+* Copyright 2024 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+=========================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
+  <title>Quản lý thành viên - Admin Dashboard</title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
+  <!-- Nucleo Icons -->
+  <link href="/static/assets/css/nucleo-icons.css" rel="stylesheet" />
+  <link href="/static/assets/css/nucleo-svg.css" rel="stylesheet" />
+  <!-- Font Awesome Icons -->
+  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+  <!-- CSS Files -->
+  <link id="pagestyle" href="/static/assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <style>
+
+  </style>
+  <script>
+    // KIỂM TRA BẢO MẬT: Nếu không có currentUser, đá văng ra index
+    if (!localStorage.getItem('currentUser')) {
+      // alert() sẽ chặn màn hình lại, bắt người dùng phải bấm "OK" mới chạy tiếp
+      alert('Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!');
+
+      // Dùng window.location.replace() với đường dẫn tương đối.
+      // Hàm này an toàn tuyệt đối khi đưa lên server online và ngăn người dùng bấm nút "Back" quay lại trang admin.
+      // (Nhớ đổi 'index.html' thành 'index_2.html' nếu file trang chủ của bạn đang đặt tên như vậy nhé).
+      window.location.replace('index.html');
+    }
+  </script>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3" id="sidenav-main">
+  <div class="sidenav-header">
+    <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+    <a class="navbar-brand m-0" href="#">
+      <img src="/static/assets/img/logo-ct-dark.png" class="navbar-brand-img h-100" alt="main_logo">
+      <span class="ms-1 font-weight-bold">Soft UI Dashboard</span>
+    </a>
+  </div>
+  <hr class="horizontal dark mt-0">
+  <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <title>shop </title>
+              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g transform="translate(-1716.000000, -439.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                  <g transform="translate(1716.000000, 291.000000)">
+                    <g transform="translate(0.000000, 148.000000)">
+                      <path class="color-background opacity-6" d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"></path>
+                      <path class="color-background" d="M39.198,22.4912623 C37.3776246,22.4928106 35.5817531,22.0149171 33.951625,21.0951667 L33.92225,21.1107282 C31.1430221,22.6838032 27.9255001,22.9318916 24.9844167,21.7998837 C24.4750389,21.605469 23.9777983,21.3722567 23.4960833,21.1018359 L23.4745417,21.1129513 C20.6961809,22.6871153 17.4786145,22.9344611 14.5386667,21.7998837 C14.029926,21.6054643 13.533337,21.3722507 13.0522917,21.1018359 C11.4250962,22.0190609 9.63246555,22.4947009 7.81570833,22.4912623 C7.16510551,22.4842162 6.51607673,22.4173045 5.875,22.2911849 L5.875,44.7220845 C5.875,45.9498589 6.7517757,46.9451667 7.83333333,46.9451667 L19.5833333,46.9451667 L19.5833333,33.6066734 L27.4166667,33.6066734 L27.4166667,46.9451667 L39.1666667,46.9451667 C40.2482243,46.9451667 41.125,45.9498589 41.125,44.7220845 L41.125,22.2822926 C40.4887822,22.4116582 39.8442868,22.4815492 39.198,22.4912623 Z"></path>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <span class="nav-link-text ms-1">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="thanh-vien.html">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <svg width="12px" height="12px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <title>office</title>
+              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g transform="translate(-1869.000000, -293.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                  <g transform="translate(1716.000000, 291.000000)">
+                    <g id="office" transform="translate(153.000000, 2.000000)">
+                      <path class="color-background opacity-6" d="M12.25,17.5 L8.75,17.5 L8.75,1.75 C8.75,0.78225 9.53225,0 10.5,0 L31.5,0 C32.46775,0 33.25,0.78225 33.25,1.75 L33.25,12.25 L29.75,12.25 L29.75,3.5 L12.25,3.5 L12.25,17.5 Z"></path>
+                      <path class="color-background" d="M40.25,14 L24.5,14 C23.53225,14 22.75,14.78225 22.75,15.75 L22.75,38.5 L19.25,38.5 L19.25,22.75 C19.25,21.78225 18.46775,21 17.5,21 L1.75,21 C0.78225,21 0,21.78225 0,22.75 L0,40.25 C0,41.21775 0.78225,42 1.75,42 L40.25,42 C41.21775,42 42,41.21775 42,40.25 L42,15.75 C42,14.78225 41.21775,14 40.25,14 Z M12.25,36.75 L7,36.75 L7,33.25 L12.25,33.25 L12.25,36.75 Z M12.25,29.75 L7,29.75 L7,26.25 L12.25,26.25 L12.25,29.75 Z M35,36.75 L29.75,36.75 L29.75,33.25 L35,33.25 L35,36.75 Z M35,29.75 L29.75,29.75 L29.75,26.25 L35,26.25 L35,29.75 Z M35,22.75 L29.75,22.75 L29.75,19.25 L35,19.25 L35,22.75 Z"></path>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <span class="nav-link-text ms-1">Quản lý thành viên</span>
+        </a>
+      </li>
+      <!-- Mục menu Quản lý danh hiệu -->
+      <li class="nav-item">
+        <a class="nav-link" href="danh-hieu.html">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-trophy text-dark" style="font-size: 14px;"></i>
+          </div>
+          <span class="nav-link-text ms-1">Quản lý danh hiệu</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <!-- Thêm onclick="handleAdminLogout()" và sửa href -->
+        <a class="nav-link" href="javascript:void(0);" onclick="handleAdminLogout()">
+          <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-sign-out-alt text-dark" style="font-size: 14px;"></i>
+          </div>
+          <span class="nav-link-text ms-1">Đăng xuất</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</aside>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  <!-- Navbar -->
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+    <div class="container-fluid py-1 px-3">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+          <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Trang chủ</a></li>
+          <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Quản lý thành viên</li>
+        </ol>
+        <h6 class="font-weight-bolder mb-0">Quản lý thành viên</h6>
+      </nav>
+      <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+        <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+          <div class="input-group">
+            <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
+            <input type="text" class="form-control" placeholder="Tìm kiếm...">
+          </div>
+        </div>
+        <ul class="navbar-nav justify-content-end">
+          <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+            <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+              <div class="sidenav-toggler-inner">
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
+                <i class="sidenav-toggler-line"></i>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card mb-4">
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <h6>Danh sách thành viên (R81User)</h6>
+            <!-- Nút mở Form Thêm Mới -->
+            <button type="button" class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#userModal" onclick="resetForm()">
+              + Thêm thành viên
+            </button>
+          </div>
+          <div class="card-body px-0 pt-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0" id="memberTable">
+                <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Mã TV</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tên Thành Viên</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày Sinh</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Thế Hệ</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Nhiệm Kì</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Hội Trưởng</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Đương Nhiệm</th>
+                  <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Thao Tác</th>
+                </tr>
+                </thead>
+                <tbody id="memberTableBody">
+                <!-- Dữ liệu sẽ được load qua JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer pt-3">
+      <div class="container-fluid">
+        <div class="row align-items-center justify-content-lg-between">
+          <div class="col-lg-6 mb-lg-0 mb-4">
+            <div class="copyright text-center text-sm text-muted text-lg-start">
+              © <script>document.write(new Date().getFullYear())</script>,
+              Thiết kế bởi <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative Tim</a>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</main>
+
+<!-- Modal Thêm/Sửa Thành Viên -->
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userModalLabel">Thông tin thành viên</h5>
+        <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="frmR81Member">
+          <div class="form-group">
+            <label for="memberId" class="col-form-label">Mã thành viên (Member_ID):</label>
+            <input type="text" class="form-control" id="memberId" placeholder="VD: TV001">
+          </div>
+          <div class="form-group">
+            <label for="memberName" class="col-form-label">Tên thành viên (Member_Name):</label>
+            <input type="text" class="form-control" id="memberName" placeholder="Nhập họ và tên...">
+          </div>
+          <div class="form-group">
+            <label for="ngaySinh" class="col-form-label">Ngày sinh (Ngay_Sinh):</label>
+            <input type="date" class="form-control" id="ngaySinh">
+          </div>
+          <div class="form-group">
+            <label for="linkAnhThe" class="col-form-label">Link ảnh thẻ (Link_Anh_The):</label>
+            <input type="text" class="form-control" id="linkAnhThe" placeholder="Nhập URL ảnh thẻ...">
+          </div>
+          <div class="form-group">
+            <label for="linkAnhCnhan" class="col-form-label">Link ảnh cá nhân (Link_Anh_Cnhan):</label>
+            <input type="text" class="form-control" id="linkAnhCnhan" placeholder="Nhập URL ảnh cá nhân...">
+          </div>
+          <div class="form-group">
+            <label for="theHeTVien" class="col-form-label">Thế hệ thành viên (The_He_TVien):</label>
+            <input type="text" class="form-control" id="theHeTVien" placeholder="VD: F1, Gen 2...">
+          </div>
+          <div class="form-group">
+            <label for="nhiemKi" class="col-form-label">Nhiệm kì hội trưởng:</label>
+            <input type="text" class="form-control" id="nhiemKi" placeholder="VD: 2023-2024">
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="isHoiTruong">
+                <label class="form-check-label" for="isHoiTruong">Là Hội trưởng</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="isDuongNhiem">
+                <label class="form-check-label" for="isDuongNhiem">Đang Đương nhiệm</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Đóng</button>
+        <button type="button" class="btn bg-gradient-primary" onclick="saveMember()">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cấp Tài Khoản Hệ Thống -->
+<div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="accountModalLabel"><i class="fas fa-key text-warning me-2"></i>Cấp tài khoản hệ thống</h5>
+        <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="frmAccount">
+          <!-- Trường ẩn để lưu mã thành viên -->
+          <input type="hidden" id="accMemberId">
+
+          <div class="form-group">
+            <label class="col-form-label">Thành viên được cấp:</label>
+            <input type="text" class="form-control bg-light" id="accMemberName" readonly>
+          </div>
+          <div class="form-group">
+            <label for="accUserId" class="col-form-label">Tên đăng nhập (User ID):</label>
+            <input type="text" class="form-control" id="accUserId" placeholder="Nhập tên đăng nhập..." required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="accPassword" class="col-form-label">Mật khẩu:</label>
+            <input type="password" class="form-control" id="accPassword" placeholder="Nhập mật khẩu..." required autocomplete="new-password">
+            <small class="form-text text-muted">Mật khẩu sẽ được mã hóa Bcrypt một chiều trước khi lưu vào cơ sở dữ liệu.</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn bg-gradient-success" onclick="createAccount()">Tạo tài khoản</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Core JS Files -->
+<script src="/static/assets/js/core/popper.min.js"></script>
+<script src="/static/assets/js/core/bootstrap.min.js"></script>
+<script src="/static/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="/static/assets/js/plugins/smooth-scrollbar.min.js"></script>
+<script>
+  var win = navigator.platform.indexOf('Win') > -1;
+  if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = {
+      damping: '0.5'
+    }
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+  }
+</script>
+<!-- Github buttons -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+<!-- Control Center for Soft Dashboard -->
+<script src="/static/assets/js/soft-ui-dashboard.min.js?v=1.1.0"></script>
+<script src="/static/assets/js/config.js"></script>
+<!-- Script điều khiển Modal -->
+<script>
+
+  let globalMembersData = [];
+  let dataTableInstance = null;
+
+  document.addEventListener("DOMContentLoaded", function() {
+    loadTableData();
+  });
+
+  // 1. Load dữ liệu và khởi tạo Bảng
+  // 1. Load dữ liệu Members và Users để đối chiếu
+  function loadTableData() {
+    // Gọi song song 2 API lấy Thành viên và Tài khoản
+    Promise.all([
+      fetch(API_BASE_URL + '/api/members').then(res => res.json()),
+      fetch(API_BASE_URL + '/api/users').then(res => res.json())
+    ])
+            .then(([membersData, usersData]) => {
+              globalMembersData = membersData;
+
+              if (dataTableInstance) {
+                dataTableInstance.destroy();
+              }
+
+              const tbody = document.getElementById("memberTableBody");
+              tbody.innerHTML = "";
+
+              membersData.forEach(member => {
+                const avatarUrl = member.linkAnhThe ? member.linkAnhThe : '/static/assets/img/team-2.jpg';
+                const ngaySinh = member.ngaySinh ? member.ngaySinh : '';
+                const theHe = member.theHeTVien ? member.theHeTVien : '';
+                const nhiemKi = member.nhiemki ? member.nhiemki : '';
+                const isHoiTruongBool = member.isHoiTruong ? true : false;
+                const isDuongNhiemBool = member.isDuongNhiem ? true : false;
+
+                const badgeHT = isHoiTruongBool ? '<span class="badge badge-sm bg-gradient-success">Có</span>' : '<span class="badge badge-sm bg-gradient-secondary">Không</span>';
+                const badgeDN = isDuongNhiemBool ? '<span class="badge badge-sm bg-gradient-warning">Có</span>' : '<span class="badge badge-sm bg-gradient-secondary">Không</span>';
+
+                // KIỂM TRA XEM THÀNH VIÊN ĐÃ CÓ TÀI KHOẢN CHƯA
+                const userAcc = usersData.find(u => u.memberId === member.memberId);
+                const hasAccount = !!userAcc;
+                const mappedUserId = hasAccount ? userAcc.userId : member.memberId.toLowerCase();
+
+                // Tự động đổi nút dựa trên trạng thái tài khoản
+                let accountButtonHTML = '';
+                if (hasAccount) {
+                  accountButtonHTML = `
+            <a href="javascript:;" class="text-warning font-weight-bold text-xs me-3"
+               onclick="openAccountModal('${member.memberId}', '${member.memberName}', '${mappedUserId}', true)">
+              <i class="fas fa-key"></i> Đổi Pass
+            </a>`;
+                } else {
+                  accountButtonHTML = `
+            <a href="javascript:;" class="text-success font-weight-bold text-xs me-3"
+               onclick="openAccountModal('${member.memberId}', '${member.memberName}', '${mappedUserId}', false)">
+              <i class="fas fa-user-plus"></i> Cấp TK
+            </a>`;
+                }
+
+                const row = `
+            <tr>
+              <td><p class="text-sm font-weight-bold mb-0 ps-3">${member.memberId}</p></td>
+              <td>
+                <div class="d-flex px-2 py-1">
+                  <div><img src="${avatarUrl}" class="avatar avatar-md me-3" alt="avatar" style="object-fit: cover;"></div>
+                  <div class="d-flex flex-column justify-content-center">
+                    <h6 class="mb-0 text-sm">${member.memberName}</h6>
+                  </div>
+                </div>
+              </td>
+              <td><p class="text-sm font-weight-bold mb-0">${ngaySinh}</p></td>
+              <td class="align-middle text-center text-sm"><span class="badge badge-sm bg-gradient-info">${theHe}</span></td>
+              <td class="align-middle text-center text-sm"><span class="text-secondary text-xs font-weight-bold">${nhiemKi}</span></td>
+              <td class="align-middle text-center text-sm">${badgeHT}</td>
+              <td class="align-middle text-center text-sm">${badgeDN}</td>
+
+              <td class="align-middle text-center">
+                ${accountButtonHTML}
+                <a href="javascript:;" class="text-secondary font-weight-bold text-xs me-3"
+                   data-bs-toggle="modal" data-bs-target="#userModal"
+                   onclick="editMember('${member.memberId}', '${member.memberName}', '${ngaySinh}', '${member.linkAnhThe || ''}', '${member.linkAnhCnhan || ''}', '${theHe}', '${nhiemKi}', ${isHoiTruongBool}, ${isDuongNhiemBool})">
+                  Sửa
+                </a>
+                <a href="javascript:;" class="text-danger font-weight-bold text-xs"
+                   onclick="deleteMember('${member.memberId}')">
+                  Xóa
+                </a>
+              </td>
+            </tr>
+          `;
+                tbody.innerHTML += row;
+              });
+
+              // Khởi tạo lại DataTable (Giữ nguyên code cũ của bạn)
+              dataTableInstance = $('#memberTable').DataTable({
+                "language": {
+                  "search": "Tìm kiếm nhanh:",
+                  "lengthMenu": "Hiển thị _MENU_ thành viên",
+                  "info": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ thành viên",
+                  "paginate": { "next": "Sau", "previous": "Trước" }
+                }
+              });
+            })
+            .catch(error => console.error('Lỗi khi load danh sách:', error));
+  }
+
+  // 2. Thêm thành viên mới (Tự động sinh mã)
+  function resetForm() {
+    document.getElementById("userModalLabel").innerText = "Thêm thành viên mới";
+    document.getElementById("frmR81Member").reset();
+
+    document.getElementById("nhiemKi").value = "";
+
+    document.getElementById("isHoiTruong").checked = false;
+    document.getElementById("isDuongNhiem").checked = false;
+
+    const idInput = document.getElementById("memberId");
+    idInput.readOnly = false;
+
+    let maxNum = 0;
+    globalMembersData.forEach(m => {
+      if (m.memberId && m.memberId.toUpperCase().startsWith("TV")) {
+        let numPart = parseInt(m.memberId.substring(2));
+        if (!isNaN(numPart) && numPart > maxNum) {
+          maxNum = numPart;
+        }
+      }
+    });
+
+    const nextNum = maxNum + 1;
+    const nextId = "TV" + String(nextNum).padStart(3, '0');
+    idInput.value = nextId;
+  }
+
+  // 3. Đổ dữ liệu vào Form khi Sửa
+  function editMember(id, name, dob, linkThe, linkCnhan, theHe, nhiemKi, isHoiTruong, isDuongNhiem) {
+    document.getElementById("userModalLabel").innerText = "Cập nhật thành viên";
+
+    const idInput = document.getElementById("memberId");
+    idInput.value = id;
+    idInput.readOnly = true;
+
+    document.getElementById("memberName").value = name;
+    document.getElementById("ngaySinh").value = dob;
+    document.getElementById("linkAnhThe").value = linkThe;
+    document.getElementById("linkAnhCnhan").value = linkCnhan;
+    document.getElementById("theHeTVien").value = theHe;
+
+    document.getElementById("nhiemKi").value = nhiemKi;
+
+    document.getElementById("isHoiTruong").checked = isHoiTruong;
+    document.getElementById("isDuongNhiem").checked = isDuongNhiem;
+  }
+
+  // 4. Lưu dữ liệu
+  function saveMember() {
+    const idInput = document.getElementById("memberId");
+    const memberId = idInput.value.trim();
+    const isEditMode = idInput.readOnly;
+
+    if (!memberId) {
+      alert("Lỗi: Mã thành viên không được để trống!");
+      idInput.focus();
+      return;
+    }
+
+    const requestData = {
+      memberId: memberId,
+      memberName: document.getElementById("memberName").value,
+      ngaySinh: document.getElementById("ngaySinh").value,
+      linkAnhThe: document.getElementById("linkAnhThe").value,
+      linkAnhCnhan: document.getElementById("linkAnhCnhan").value,
+      theHeTVien: document.getElementById("theHeTVien").value,
+      nhiemki: document.getElementById("nhiemKi").value,
+      isHoiTruong: document.getElementById("isHoiTruong").checked,
+      isDuongNhiem: document.getElementById("isDuongNhiem").checked
+    };
+
+    const apiMethod = isEditMode ? 'PUT' : 'POST';
+    const apiUrl = isEditMode ? `${API_BASE_URL}/api/members/${memberId}` : `${API_BASE_URL}/api/members`;
+
+    fetch(apiUrl, {
+      method: apiMethod,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestData)
+    })
+            .then(response => {
+              if(response.ok) {
+                alert(isEditMode ? "Cập nhật thành công!" : "Thêm thành viên thành công!");
+                const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+                modal.hide();
+                loadTableData();
+              } else {
+                alert("Thao tác thất bại (Mã TV có thể đã tồn tại). Vui lòng kiểm tra lại!");
+              }
+            })
+            .catch(error => console.error('Lỗi khi lưu:', error));
+  }
+
+  // 5. Xóa thành viên
+  function deleteMember(id) {
+    if(confirm(`Bạn có chắc chắn muốn xóa thành viên mã ${id} không?`)) {
+      fetch(`${API_BASE_URL}/api/members/${id}`, { method: 'DELETE' })
+              .then(response => {
+                if(response.ok) {
+                  alert("Xóa thành công!");
+                  loadTableData();
+                } else {
+                  alert("Lỗi khi xóa thành viên!");
+                }
+              })
+              .catch(error => console.error('Lỗi API xóa:', error));
+    }
+  }
+  // ================= XỬ LÝ QUẢN LÝ TÀI KHOẢN =================
+  let isUpdateAccountMode = false;
+
+  // 6. Mở Modal Cấp Tài Khoản / Đổi Pass
+  function openAccountModal(memberId, memberName, userId, isUpdate) {
+    isUpdateAccountMode = isUpdate;
+    document.getElementById("frmAccount").reset();
+
+    document.getElementById("accMemberId").value = memberId;
+    document.getElementById("accMemberName").value = memberName + ' (' + memberId + ')';
+
+    const userIdInput = document.getElementById("accUserId");
+    userIdInput.value = userId;
+
+    // Nếu đổi pass (đã có tài khoản) thì không cho sửa User ID
+    userIdInput.readOnly = isUpdate;
+    userIdInput.className = isUpdate ? "form-control bg-light" : "form-control";
+
+    // Đổi tiêu đề Modal cho phù hợp
+    document.getElementById("accountModalLabel").innerHTML = isUpdate
+            ? '<i class="fas fa-key text-warning me-2"></i>Đổi mật khẩu tài khoản'
+            : '<i class="fas fa-user-plus text-success me-2"></i>Cấp tài khoản mới';
+
+    var modal = new bootstrap.Modal(document.getElementById('accountModal'));
+    modal.show();
+  }
+
+  // 7. Gọi API tạo tài khoản hoặc Đổi mật khẩu
+  function createAccount() {
+    const memberId = document.getElementById("accMemberId").value;
+    const userId = document.getElementById("accUserId").value.trim();
+    const password = document.getElementById("accPassword").value;
+
+    if (!userId || !password) {
+      alert("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
+      return;
+    }
+
+    const requestData = {
+      userId: userId,
+      password: password,
+      memberId: memberId
+    };
+
+    // Xác định gọi API tạo mới (POST) hay cập nhật mật khẩu (PUT)
+    const apiMethod = isUpdateAccountMode ? 'PUT' : 'POST';
+    const apiUrl = isUpdateAccountMode
+            ? `${API_BASE_URL}/api/users/${userId}/password`
+            : `${API_BASE_URL}/api/users`;
+
+    fetch(apiUrl, {
+      method: apiMethod,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestData)
+    })
+            .then(async response => {
+              const msg = await response.text();
+
+              if (response.ok) {
+                alert(msg);
+
+                const modalEl = document.getElementById('accountModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                // Load lại bảng để cập nhật màu của nút
+                loadTableData();
+              } else {
+                alert("Lỗi: " + msg);
+              }
+            })
+            .catch(error => {
+              console.error('Lỗi khi xử lý tài khoản:', error);
+              alert("Hệ thống gián đoạn, vui lòng kiểm tra lại Network hoặc Server!");
+            });
+  }
+</script>
+<script>
+  function handleAdminLogout() {
+    if(confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+      localStorage.removeItem('currentUser'); // Hủy phiên đăng nhập
+      window.location.href = 'index.html'; // Chuyển về trang chủ
+    }
+  }
+</script>
+</body>
+
+</html>

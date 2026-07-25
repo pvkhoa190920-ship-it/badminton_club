@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ thống CLB [Bad]minton</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; background-color: transparent; overflow-x: hidden; }
+
+        /* NỀN WEB HOẠT HÌNH */
+        .animated-bg { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; background: linear-gradient(to bottom, #d4edda 0%, #ccebe6 100%); overflow: hidden; }
+        .cloud { position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50px; animation: float linear infinite; }
+        .cloud::before, .cloud::after { content: ''; position: absolute; background: rgba(255, 255, 255, 0.8); border-radius: 50%; }
+        .cloud::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+        .cloud::after { width: 40px; height: 40px; top: -15px; right: 15px; }
+        .hill { position: absolute; border-radius: 50% 50% 0 0; bottom: -20vh; }
+        .hill-bg { width: 150vw; height: 60vh; left: -25vw; background-color: #a3d9a5; }
+        .hill-fg { width: 120vw; height: 40vh; right: -10vw; bottom: -10vh; background-color: #81c784; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .animal { position: absolute; font-size: 3.5rem; z-index: 1; filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.15)); user-select: none; }
+        .dog-peek { bottom: 25vh; right: 25vw; animation: peek 5s ease-in-out infinite; }
+        .duck-waddle { bottom: 3vh; left: 35vw; font-size: 2.5rem; animation: waddle 3s linear infinite; }
+
+        @keyframes float { 0% { transform: translateX(-15vw); } 100% { transform: translateX(110vw); } }
+        @keyframes peek { 0%, 100% { transform: translateY(60px); opacity: 0; } 15%, 85% { transform: translateY(0); opacity: 1; } }
+        @keyframes waddle { 0%, 100% { transform: translateX(0) rotate(0deg); } 25% { transform: translateX(15px) rotate(10deg); } 75% { transform: translateX(-15px) rotate(-10deg); } }
+
+        /* GIAO DIỆN CHÍNH */
+        .hero-section { position: relative; border-radius: 15px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .hero-image { width: 100%; height: 350px; object-fit: cover; object-position: 50% 65%; filter: brightness(1.1) contrast(1.05); }
+        .hero-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.05)); display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; color: white; }
+        .custom-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 12px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .custom-card:hover { transform: translateY(-5px); box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15); }
+        .info-table th { width: 40%; color: #6c757d; font-weight: 600; }
+        .quote-box { background-color: rgba(255, 243, 205, 0.9); border-left: 5px solid #ffc107; padding: 20px; border-radius: 0 10px 10px 0; font-style: italic; color: #856404; }
+        .reason-list li { margin-bottom: 12px; line-height: 1.6; }
+
+        /* MENU NHẢY NHANH BÊN TRÁI */
+        .quick-links-container { position: fixed; left: 2%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; z-index: 1040; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); padding: 15px; border-radius: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.6); transition: width 0.3s ease, background 0.3s ease; }
+        .quick-links-container .btn { text-align: left; border-radius: 8px !important; transition: all 0.2s ease; display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
+        .quick-links-container .btn:hover { transform: translateX(5px); }
+
+        @media (min-width: 769px) and (max-width: 1300px) {
+            .quick-links-container { width: 62px; padding: 15px 12px; }
+            .quick-links-container:hover { width: 175px; background: rgba(255, 255, 255, 0.95); }
+            .quick-link-text { opacity: 0; margin-left: 0; transition: opacity 0.3s ease; }
+            .quick-links-container:hover .quick-link-text { opacity: 1; margin-left: 8px; }
+            .quick-links-container .btn i { font-size: 1.2rem; margin-right: 0 !important; }
+        }
+
+        /* ẢNH ĐỘNG: MÈO VÀ GẤU ĐÁNH CẦU */
+        .player-char { position: fixed; bottom: 5%; font-size: 4rem; z-index: 900; display: flex; align-items: center; user-select: none; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
+        .left-player { left: 4%; }
+        .right-player { right: 4%; transform: scaleX(-1); }
+        .racket { font-size: 2.8rem; margin-left: -15px; transform-origin: bottom center; transform: rotate(20deg); transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .left-player.hit .racket { transform: rotate(110deg) translateY(-10px); }
+        .right-player.hit .racket { transform: rotate(110deg) translateY(-10px); }
+        .birdie { position: fixed; z-index: 950; left: 10%; bottom: 15%; opacity: 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+        .fly-to-right { animation: arcRight 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; opacity: 1; }
+        .fly-to-left { animation: arcLeft 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; opacity: 1; }
+
+        @keyframes arcRight { 0% { left: 10%; bottom: 15%; transform: rotate(0deg); } 50% { left: 48%; bottom: 65%; transform: rotate(360deg); } 100% { left: 86%; bottom: 15%; transform: rotate(720deg); } }
+        @keyframes arcLeft { 0% { left: 86%; bottom: 15%; transform: rotate(0deg); } 50% { left: 48%; bottom: 65%; transform: rotate(-360deg); } 100% { left: 10%; bottom: 15%; transform: rotate(-720deg); } }
+
+        /* BACK TO TOP & FOOTER */
+        .back-to-top { position: fixed; bottom: 40px; right: 5%; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; z-index: 999; opacity: 0; visibility: hidden; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); background: linear-gradient(135deg, #0d6efd, #0dcaf0); color: white; border: none; }
+        .back-to-top.show { opacity: 1; visibility: visible; }
+        .back-to-top:hover { transform: translateY(-5px); color: white; box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4); }
+        .custom-footer { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 255, 255, 0.6); margin-top: 50px; border-radius: 15px; }
+
+        /* TỐI ƯU CHO MOBILE */
+        @media (max-width: 768px) {
+            .hero-image { height: 200px; }
+            .hero-overlay { padding: 15px; }
+            .hero-overlay h1 { font-size: 2rem !important; }
+            .hero-overlay p { font-size: 0.9rem !important; margin-bottom: 0; }
+            .nav-pills .nav-link { font-size: 0.85rem; padding: 0.5rem; }
+            .custom-card .card-body { padding: 1.25rem !important; }
+            .quick-links-container { position: relative; left: auto; top: auto; transform: none; flex-direction: row; flex-wrap: nowrap; overflow-x: auto; background: none; backdrop-filter: none; box-shadow: none; border: none; padding: 0 0 10px 0; margin-bottom: 20px; width: 100%; border-bottom: 1px solid #dee2e6; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+            .quick-links-container::-webkit-scrollbar { display: none; }
+            .quick-links-container .btn { border-radius: 50rem !important; }
+            .quick-links-container .btn:hover { transform: none; }
+            .quick-link-text { opacity: 1; margin-left: 0; }
+            .back-to-top { left: auto; right: 20px; bottom: 20px; width: 45px; height: 45px; }
+            .player-char, .birdie { display: none !important; }
+        }
+
+        /* LOGO LOOP - CẬP NHẬT TỶ LỆ 3:4 */
+        .logoloop { position: relative; overflow: hidden; width: 100%; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px); border-radius: 20px; padding: 20px 0; --logoloop-gap: 30px; --logoloop-logoHeight: 140px; --logoloop-fadeColor: #f0f7f4; }
+        .logoloop__track { display: flex; width: max-content; animation: logoloop-scroll 25s linear infinite; }
+        .logoloop__track:hover { animation-play-state: paused; }
+        .logoloop__list { display: flex; align-items: center; list-style: none; padding: 0; margin: 0; }
+        .logoloop__item { flex: 0 0 auto; margin-right: var(--logoloop-gap); text-align: center; }
+        .logoloop__item img { height: var(--logoloop-logoHeight); width: calc(var(--logoloop-logoHeight) * 3 / 4); object-fit: cover; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+        .logoloop__item:hover img { transform: scale(1.08); border-color: #3b82f6; }
+        .logoloop__name { margin-top: 10px; font-weight: bold; color: #1e293b; font-size: 0.9rem; }
+        .logoloop__generation { font-size: 0.8rem; color: #64748b; }
+        .logoloop--fade::before, .logoloop--fade::after { content: ''; position: absolute; top: 0; bottom: 0; width: clamp(40px, 15%, 150px); pointer-events: none; z-index: 10; }
+        .logoloop--fade::before { left: 0; background: linear-gradient(to right, var(--logoloop-fadeColor) 0%, rgba(255, 255, 255, 0) 100%); }
+        .logoloop--fade::after { right: 0; background: linear-gradient(to left, var(--logoloop-fadeColor) 0%, rgba(255, 255, 255, 0) 100%); }
+        @keyframes logoloop-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+
+        /* THIẾT KẾ GRID CHI TIẾT THẾ HỆ - TỶ LỆ HỘI TRƯỞNG LÀ 3:4 */
+        .generation-select { border: 2px solid #198754; color: #198754; font-weight: bold; border-radius: 30px; padding: 8px 20px; cursor: pointer; background-color: rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(25, 135, 84, 0.1); }
+        .generation-select:focus { box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25); border-color: #198754; }
+        .president-card { transition: all 0.3s ease; }
+        .president-img-main { width: 100%; max-width: 200px; aspect-ratio: 3/4; object-fit: cover; border-radius: 15px; border: 4px solid #fca311; box-shadow: 0 10px 25px rgba(252, 163, 17, 0.3); transition: transform 0.3s ease; }
+        .president-card:hover .president-img-main { transform: translateY(-5px); }
+        .crown-icon { font-size: 2.5rem; top: -25px !important; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); z-index: 2; }
+
+        /* TRẢ LẠI ẢNH THẺ THÀNH VIÊN TỶ LỆ 16:9 */
+        .member-grid-item img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 2px solid transparent; transition: all 0.3s ease; cursor: pointer; }
+        .member-grid-item img:hover { transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.15); border-color: #0dcaf0; }
+        .fade-content { animation: fadeInContent 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes fadeInContent { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* HIỆU ỨNG PHÓNG TO ẢNH (LIGHTBOX) */
+        .zoomable-img { cursor: pointer !important; }
+        .image-lightbox { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .image-lightbox.show { opacity: 1; visibility: visible; }
+        .image-lightbox img { width: 80vw; max-width: 1200px; object-fit: contain; max-height: 90vh; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 2px solid rgba(255, 255, 255, 0.2); }
+        .image-lightbox.show img { transform: scale(1); }
+        .lightbox-close { position: absolute; top: 20px; right: 30px; color: white; font-size: 3.5rem; cursor: pointer; user-select: none; transition: transform 0.2s ease, color 0.2s ease; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .lightbox-close:hover { transform: scale(1.2); color: #fca311; }
+
+        /* THIẾT KẾ KHỐI THÀNH VIÊN TIÊU BIỂU & SINH NHẬT */
+        .featured-card, .birthday-card {
+            border: 2px solid transparent; background: rgba(255, 255, 255, 0.7); border-radius: 15px; padding: 20px; text-align: center; position: relative; transition: all 0.3s ease;
+        }
+        .featured-card:hover { transform: translateY(-8px); background: rgba(255, 255, 255, 0.95); }
+        .badge-trophy { border-color: #ffc107; box-shadow: 0 8px 20px rgba(255, 193, 7, 0.15); }
+        .badge-hardworking { border-color: #fd7e14; box-shadow: 0 8px 20px rgba(253, 126, 20, 0.15); }
+        .badge-sponsor { border-color: #20c997; box-shadow: 0 8px 20px rgba(32, 201, 151, 0.15); }
+
+        .birthday-card { border-color: #dc3545; background: linear-gradient(135deg, rgba(255, 245, 245, 0.9), rgba(255, 255, 255, 0.95)); box-shadow: 0 8px 25px rgba(220, 53, 69, 0.15); }
+
+        .featured-icon { font-size: 2.2rem; margin-bottom: 10px; filter: drop-shadow(0 3px 5px rgba(0,0,0,0.1)); }
+
+        .featured-img { width: 100%; max-width: 180px; display: block; margin: 0 auto 15px auto; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+
+        .bday-img { width: 180px; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; border: 3px solid #ffc107; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.3s ease; }
+        .bday-img:hover { transform: scale(1.05); }
+
+        /* TÙY CHỈNH NÚT PHÂN TRANG */
+        .custom-pagination .page-link { color: #198754; background: rgba(255,255,255,0.7); border: 1px solid rgba(25, 135, 84, 0.3); font-weight: 500; cursor: pointer; }
+        .custom-pagination .page-link:hover { background: rgba(25, 135, 84, 0.1); }
+        .custom-pagination .page-item.active .page-link { background-color: #198754; border-color: #198754; color: white; }
+        .custom-pagination .page-item.disabled .page-link { color: #6c757d; background: rgba(255,255,255,0.4); cursor: not-allowed; }
+    </style>
+</head>
+<body class="container py-4">
+
+<div class="animated-bg">
+    <div class="cloud" style="top: 10%; left: -20%; animation-duration: 25s; width: 120px; height: 40px;"></div>
+    <div class="cloud" style="top: 25%; left: -10%; animation-duration: 35s; width: 150px; height: 50px;"></div>
+    <div class="cloud" style="top: 15%; left: -30%; animation-duration: 40s; width: 100px; height: 35px;"></div>
+    <div class="hill hill-bg"></div>
+    <div class="hill hill-fg"></div>
+    <div class="animal dog-peek">🐶</div>
+    <div class="animal duck-waddle">🐥🐥</div>
+</div>
+
+<div class="hero-section">
+    <img src="https://lh3.googleusercontent.com/d/1uGQj98ju9OWglgdhBRfRDfr-u2wdGcT6" alt="Ảnh Câu lạc bộ Cầu lông" class="hero-image" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://picsum.photos/seed/default/1280/720';">
+    <div class="hero-overlay">
+        <h1 class="display-4 fw-bold mb-1">[Bad]minton</h1>
+        <p class="lead mb-0"><i class="bi bi-geo-alt-fill text-danger"></i> Nơi hội tụ những tay vợt đam mê và nhiệt huyết</p>
+    </div>
+</div>
+
+<ul class="nav nav-pills nav-fill bg-white p-2 rounded-pill shadow-sm mb-4" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill fw-bold" id="intro-tab" data-bs-toggle="tab" data-bs-target="#intro" type="button" role="tab"><i class="bi bi-info-circle me-2"></i>Giới thiệu</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold" id="member-tab" data-bs-toggle="tab" data-bs-target="#member" type="button" role="tab"><i class="bi bi-people me-2"></i>Thành viên</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab"><i class="bi bi-calendar-event me-2"></i>Hoạt động</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="intro" role="tabpanel">
+        <div class="quick-links-container">
+            <a href="#thong-tin-clb" class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-info-circle me-2"></i><span class="quick-link-text">Thông-tin</span></a>
+            <a href="#lich-su" class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-clock-history me-2"></i><span class="quick-link-text">Lịch-sử</span></a>
+            <a href="#thanh-tuu" class="btn btn-outline-primary btn-sm fw-bold"><i class="bi bi-trophy me-2"></i><span class="quick-link-text">Thành-tựu</span></a>
+            <a href="#ly-do" class="btn btn-outline-success btn-sm fw-bold"><i class="bi bi-stars me-2"></i><span class="quick-link-text">Lý-do tham gia</span></a>
+        </div>
+        <div class="row g-4 mt-1">
+            <div class="col-lg-7">
+                <div class="card custom-card mb-4" id="thong-tin-clb">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary fw-bold border-bottom pb-2 mb-3">Thông tin CLB</h4>
+                        <table class="table table-borderless info-table mb-0">
+                            <tbody>
+                            <tr><th><i class="bi bi-person-badge me-2"></i>Hội trưởng:</th><td class="fw-bold">Võ Tấn Hoàng <span class="badge bg-secondary ms-1">Đời 3 & 4</span></td></tr>
+                            <tr><th><i class="bi bi-tag me-2"></i>Tên câu lạc bộ:</th><td>[Bad]minton</td></tr>
+                            <tr><th><i class="bi bi-calendar-check me-2"></i>Ngày thành lập:</th><td>06/06/2023</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card custom-card mb-4" id="lich-su">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-primary fw-bold border-bottom pb-2 mb-3">Lịch sử hình thành</h4>
+                        <p class="text-justify" style="line-height: 1.8;">Hội cầu lông được hình thành từ sự khởi xướng của hội trưởng đời 1 và một nhóm nhỏ các thành viên trong đội CTXH. Ban đầu, nhóm này thường rủ nhau tham gia các buổi chơi cầu lông như một cách để giải tỏa căng thẳng sau những ngày làm việc và học tập áp lực.</p>
+                        <p class="text-justify" style="line-height: 1.8;">Qua thời gian, chính sự vui vẻ và ý nghĩa của hoạt động này đã thu hút ngày càng nhiều người tham gia. Từ một nhóm nhỏ xíu, hội cầu lông đã phát triển mạnh mẽ, trở thành một cộng đồng lớn, gắn kết nhiều thành viên chung niềm đam mê. Không chỉ dừng lại ở việc giúp mọi người thư giãn, hội còn mang đến cơ hội giao lưu, xây dựng tình bạn và những mối quan hệ gắn bó. Hội cầu lông không chỉ là nơi giải trí mà còn là một ngôi nhà chung, nơi mọi người cùng chia sẻ niềm vui, sức khỏe và sự đoàn kết.</p>
+                    </div>
+                </div>
+                <div class="card custom-card" id="thanh-tuu">
+                    <div class="card-body p-4 bg-primary bg-opacity-10 rounded">
+                        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Thành tựu nổi bật</h5>
+                        <ul class="list-unstyled mb-0 fw-medium">
+                            <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>4 năm liền chưa tan rã.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-2"></i>CLB cầu lông tập trung cựu thiếu nhi đông nhất làng.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="card custom-card border-top border-success border-4 h-100" id="ly-do">
+                    <div class="card-body p-4">
+                        <h4 class="card-title text-success fw-bold mb-4 text-center">Top lí do bạn phải tham gia</h4>
+                        <ul class="list-unstyled reason-list">
+                            <li class="d-flex align-items-start"><i class="bi bi-stars text-warning fs-5 me-3 mt-1"></i><div>Vì xuất thân từ CTXH, nên mọi người rất nhiệt tình hướng dẫn và giúp đỡ đánh tốt hơn. Không biết đánh thì cứ tham gia không phải lo.</div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-cake2-fill text-danger fs-5 me-3 mt-1"></i><div>Tổ chức sinh nhật hoành tráng cho bạn.</div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-bag-plus-fill text-info fs-5 me-3 mt-1"></i><div>Bạn không có vợt vẫn không sao, sẵn sàng cho bạn mượn vợt <em>(vợt xịn quá kh cho mượn nhé, P/s: đánh lâu dài thì nên mua vợt =))))</em></div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-bar-chart-fill text-primary fs-5 me-3 mt-1"></i><div>Có các bạn có trình độ từ thấp tới cao phù hợp với level bản thân.</div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-cash-coin text-success fs-5 me-3 mt-1"></i><div>Tiền đánh cực kỳ rẻ.</div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-emoji-sunglasses-fill text-dark fs-5 me-3 mt-1"></i><div>Không bao giờ chê bạn đánh gà trực tiếp.</div></li>
+                            <li class="d-flex align-items-start"><i class="bi bi-heart-pulse-fill text-danger fs-5 me-3 mt-1"></i><div>Hàn gắn lại những mối quan hệ đã tan vỡ.</div></li>
+                        </ul>
+                        <hr class="my-4">
+                        <div class="quote-box">"Không sao, *** còn mọi người ở hội cầu lông mà". Đúng, chúng tôi bạn luôn nhớ rằng, dù bạn đã rời Đội hay thấy lạc lõng trong Đội. Đã đi làm với nhiều áp lực đè lên mỗi ngày. Ở một mình và phải ngồi ăn cơm trên một cái bàn rộng và nhiều chiếc ghế trống,... Thì bạn vẫn còn một nơi để trở về.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="member" role="tabpanel">
+
+        <div class="birthday-card mb-4" id="birthdayBlock" style="display: none;">
+            <h4 class="fw-bold text-danger mb-4">
+                <i class="bi bi-gift-fill text-warning me-2"></i>Chúc Mừng Sinh Nhật Hôm Nay! 🎉
+            </h4>
+            <div class="d-flex flex-wrap justify-content-center gap-4" id="birthdayContainer">
+            </div>
+        </div>
+
+        <div class="card custom-card mb-4">
+            <div class="card-body p-4 text-center">
+                <h4 class="card-title text-primary fw-bold border-bottom pb-2 mb-4 d-inline-block">
+                    <i class="bi bi-star-fill text-warning me-2"></i>Gương Mặt Các Đời Hội Trưởng
+                </h4>
+                <div class="logoloop logoloop--fade">
+                    <div class="logoloop__track">
+                        <!-- Khối 1: ID presidentList1 -->
+                        <ul class="logoloop__list" id="presidentList1">
+                            <!-- Dữ liệu sẽ được JS đổ vào đây -->
+                        </ul>
+                        <!-- Khối 2 (Bản sao để tạo hiệu ứng chạy vô tận): ID presidentList2 -->
+                        <ul class="logoloop__list" aria-hidden="true" id="presidentList2">
+                            <!-- Dữ liệu sẽ được JS đổ vào đây -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card custom-card mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-5 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-3 mb-2 mb-md-0">
+                        <i class="bi bi-diagram-3-fill fs-3 text-success"></i>
+                        <select id="cboGeneration" class="form-select generation-select">
+                            <option value="">Đang tải dữ liệu...</option>
+                        </select>
+                    </div>
+                    <h4 class="mb-0 text-success fw-bold text-end ms-auto" id="generationTitle">...</h4>
+                </div>
+
+                <div id="generationContent" class="fade-content">
+                    <div class="text-center mb-5 president-card">
+                        <div class="position-relative d-inline-block">
+                            <img src="https://picsum.photos/seed/default/600/800" id="presidentImg" class="president-img-main zoomable-img" alt="Hội trưởng" referrerpolicy="no-referrer">
+                            <div class="position-absolute start-50 translate-middle crown-icon">👑</div>
+                        </div>
+                        <h4 id="presidentName" class="mt-3 fw-bold text-primary mb-1">...</h4>
+                        <span id="presidentBadge" class="badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill shadow-sm">Hội trưởng đương thời
+                        </span>
+                    </div>
+
+                    <div class="row g-3 justify-content-start" id="membersGrid">
+                    </div>
+
+                    <nav aria-label="Page navigation" class="mt-5">
+                        <ul class="pagination custom-pagination justify-content-center" id="membersPagination">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="card custom-card">
+            <div class="card-body p-4">
+                <h4 class="card-title text-danger fw-bold border-bottom pb-2 mb-4 text-center">
+                    <i class="bi bi-trophy-fill text-warning me-2"></i>Bảng Vàng Thành Viên Tiêu Biểu
+                </h4>
+
+                <!-- Khối này đã được làm trống để JS tự động đổ dữ liệu vào -->
+                <div class="row g-4 justify-content-center" id="featuredMembersContainer">
+                    <div class="text-center text-muted">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <p>Đang tải dữ liệu bảng vàng...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="tab-pane fade" id="activity" role="tabpanel"><div class="card custom-card"><div class="card-body p-5 text-center"><h3 class="text-warning">Giao diện Hoạt động đang chờ thiết kế...</h3></div></div></div>
+</div>
+
+<div id="player1" class="player-char left-player"><span class="avatar">🐱</span><span class="racket">🏸</span></div>
+<div id="birdie" class="birdie">
+    <svg width="40" height="40" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <path d="M15 10 L26 42 L38 42 L49 10 Z" fill="#ffffff" stroke="#adb5bd" stroke-width="2"/>
+        <line x1="21" y1="10" x2="29" y2="42" stroke="#adb5bd" stroke-width="2"/>
+        <line x1="32" y1="10" x2="32" y2="42" stroke="#adb5bd" stroke-width="2"/>
+        <line x1="43" y1="10" x2="35" y2="42" stroke="#adb5bd" stroke-width="2"/>
+        <line x1="18" y1="20" x2="46" y2="20" stroke="#adb5bd" stroke-width="2"/>
+        <line x1="22" y1="31" x2="42" y2="31" stroke="#adb5bd" stroke-width="2"/>
+        <path d="M26 42 C 26 58, 38 58, 38 42 Z" fill="#ff4d4d"/>
+    </svg>
+</div>
+<div id="player2" class="player-char right-player"><span class="avatar">🐻</span><span class="racket">🏸</span></div>
+
+<footer class="custom-footer py-4 mb-3 shadow-sm text-center">
+    <div class="container">
+        <h4 class="fw-bold text-primary mb-1">[Bad]minton</h4>
+        <p class="text-muted mb-3">Gắn kết đam mê - Xóa nhòa khoảng cách</p>
+        <div class="d-flex justify-content-center gap-3 mb-3">
+            <a href="https://www.facebook.com/groups/1193301502073772" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill fw-bold"><i class="bi bi-facebook me-1"></i> Người nhà (Bad)minton</a>
+            <a href="https://www.facebook.com/tanhoang.29.08" target="_blank" class="btn btn-outline-success btn-sm rounded-pill fw-bold"><i class="bi bi-person-fill me-1"></i> Facebook Hội trưởng</a>
+        </div>
+        <hr class="w-50 mx-auto text-muted">
+        <small class="text-muted fw-medium">© 2026 Hệ thống quản lý CLB. Phát triển bởi Võ Tấn Hoàng.</small>
+    </div>
+</footer>
+
+<a href="#" class="back-to-top" id="backToTopBtn" title="Lên đầu trang"><i class="bi bi-arrow-up"></i></a>
+
+<div class="image-lightbox" id="imageLightbox">
+    <span class="lightbox-close" id="lightboxClose">×</span>
+    <img src="" alt="Ảnh phóng to" id="lightboxImg">
+</div>
+
+<!-- Nút đăng nhập (Có thể đặt ở thanh điều hướng hoặc góc phải trên cùng) -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;" id="authContainer">
+    <!-- JS sẽ tự động đổ nút Đăng Nhập hoặc Dropdown Chào hỏi vào đây -->
+</div>
+
+<!-- Modal Đăng Nhập phong cách hiện đại -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-primary">Đăng Nhập Hệ Thống</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmLogin">
+                    <div class="mb-3">
+                        <label class="form-label text-sm fw-bold text-secondary">Tên đăng nhập (User ID)</label>
+                        <input type="text" class="form-control" id="loginUserId" placeholder="Nhập tài khoản..." required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-sm fw-bold text-secondary">Mật khẩu</label>
+                        <input type="password" class="form-control" id="loginPassword" placeholder="Nhập mật khẩu..." required>
+                    </div>
+
+                    <!-- Chỗ hiển thị lỗi -->
+                    <div id="loginErrorMsg" class="text-danger text-sm mb-3 text-center" style="display: none;"></div>
+
+                    <button type="submit" class="btn btn-primary w-100 rounded-3" id="btnLoginSubmit">
+                        Đăng Nhập
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/js/config.js"></script>
+<script>
+    window.addEventListener('scroll', function() {
+        var btn = document.getElementById('backToTopBtn');
+        if (window.scrollY > 300) { btn.classList.add('show'); } else { btn.classList.remove('show'); }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const birdie = document.getElementById('birdie');
+        const player1 = document.getElementById('player1');
+        const player2 = document.getElementById('player2');
+        let isLeft = true;
+
+        const tabs = document.querySelectorAll('#myTab .nav-link');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                birdie.classList.remove('fly-to-right', 'fly-to-left');
+                void birdie.offsetWidth;
+
+                if (isLeft) {
+                    player1.classList.add('hit');
+                    birdie.classList.add('fly-to-right');
+                    setTimeout(() => player1.classList.remove('hit'), 200);
+                    isLeft = false;
+                } else {
+                    player2.classList.add('hit');
+                    birdie.classList.add('fly-to-left');
+                    setTimeout(() => player2.classList.remove('hit'), 200);
+                    isLeft = true;
+                }
+            });
+        });
+
+        // Khai báo các biến DOM
+        const cboGen = document.getElementById('cboGeneration');
+        const genTitle = document.getElementById('generationTitle');
+        const presName = document.getElementById('presidentName');
+        const presImg = document.getElementById('presidentImg');
+        const membersGrid = document.getElementById('membersGrid');
+        const paginationUl = document.getElementById('membersPagination');
+        const contentBlock = document.getElementById('generationContent');
+
+        let allMembersData = [];
+        let currentGenData = [];
+        let currentPage = 1;
+        const itemsPerPage = 12;
+
+        // 1. Tải danh sách TẤT CẢ thành viên về 1 lần duy nhất
+        fetch(`${API_BASE_URL}/api/members`)
+            .then(response => response.json())
+            .then(data => {
+                allMembersData = data;
+                checkAndDisplayBirthdays(data); // Tự động kiểm tra sinh nhật từ Database
+                renderPresidentsLoop(data); // Hiển thị các đời Hội trưởng
+                loadDistinctGenerations();
+                loadFeaturedMembers(data);// danh sacnhs vinh danh
+            })
+            .catch(error => console.error('Lỗi khi tải danh sách thành viên:', error));
+
+        // ================= XỬ LÝ SINH NHẬT TỰ ĐỘNG TỪ API =================
+        function checkAndDisplayBirthdays(members) {
+            const bdayBlock = document.getElementById('birthdayBlock');
+            const bdayContainer = document.getElementById('birthdayContainer');
+
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1;
+            const currentDate = today.getDate();
+
+            const todaysBirthdays = members.filter(member => {
+                if (!member.ngaySinh) return false;
+                const dob = new Date(member.ngaySinh);
+                return (dob.getMonth() + 1) === currentMonth && dob.getDate() === currentDate;
+            });
+
+            if (todaysBirthdays.length > 0) {
+                bdayBlock.style.display = 'block';
+                bdayContainer.innerHTML = '';
+
+                todaysBirthdays.forEach(person => {
+                    const imgSrc = person.linkAnhCnhan || 'https://picsum.photos/seed/default/600/800';
+                    const name = person.memberName || 'Thành viên';
+
+                    bdayContainer.innerHTML += `
+                        <div class="text-center">
+                            <img src="${imgSrc}" class="bday-img zoomable-img mb-2" alt="${name}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://picsum.photos/seed/default/600/800';">
+                            <h6 class="fw-bold text-dark">${name}</h6>
+                        </div>
+                    `;
+                });
+            } else {
+                bdayBlock.style.display = 'none';
+            }
+        }
+
+        // ================= ĐỔ DỮ LIỆU HỘI TRƯỞNG LÊN BĂNG CHUYỀN =================
+        function renderPresidentsLoop(members) {
+            const list1 = document.getElementById('presidentList1');
+            const list2 = document.getElementById('presidentList2');
+
+            // Lọc những người là Hội trưởng (isHoiTruong === true)
+            let presidents = members.filter(m => m.isHoiTruong === true);
+
+            // Sắp xếp tăng dần theo nhiệm kì (nhiemki)
+            presidents.sort((a, b) => {
+                const termA = a.nhiemki || '';
+                const termB = b.nhiemki || '';
+                return termA.localeCompare(termB, undefined, { numeric: true, sensitivity: 'base' });
+            });
+
+            let htmlContent = '';
+            presidents.forEach(p => {
+                const imgSrc = p.linkAnhCnhan || 'https://picsum.photos/seed/default/600/800';
+                const name = p.memberName || 'Chưa cập nhật';
+
+                // Trực tiếp lấy giá trị từ cột nhiemki
+                const termText = p.nhiemki || '';
+
+                htmlContent += `
+                    <li class="logoloop__item">
+                        <img src="${imgSrc}" alt="${name}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://picsum.photos/seed/default/600/800';">
+                        <div class="logoloop__name">${name}</div>
+                        <div class="logoloop__generation">${termText}</div>
+                    </li>
+                `;
+            });
+
+            if(list1 && list2) {
+                list1.innerHTML = htmlContent;
+                list2.innerHTML = htmlContent;
+            }
+        }
+
+        // ================= NẠP VÀ LỌC THẾ HỆ =================
+        function loadDistinctGenerations() {
+            fetch(`${API_BASE_URL}/api/members/generations`)
+                .then(response => response.json())
+                .then(generations => {
+                    cboGen.innerHTML = '';
+
+                    if(generations.length === 0) {
+                        cboGen.innerHTML = '<option value="">Chưa có dữ liệu thế hệ</option>';
+                        return;
+                    }
+
+                    generations.forEach(gen => {
+                        const option = document.createElement('option');
+                        option.value = gen;
+                        option.textContent = gen;
+                        cboGen.appendChild(option);
+                    });
+
+                    if (generations.length > 0) {
+                        loadGenerationData(generations[0]);
+                    }
+                })
+                .catch(error => console.error('Lỗi tải danh sách thế hệ:', error));
+        }
+
+        function loadGenerationData(genName) {
+            contentBlock.classList.remove('fade-content');
+            void contentBlock.offsetWidth;
+            contentBlock.classList.add('fade-content');
+
+            genTitle.textContent = genName;
+
+            const filteredMembers = allMembersData.filter(m => m.theHeTVien === genName);
+
+            // ================= TÌM HỘI TRƯỞNG DỰA TRÊN NĂM NHIỆM KÌ =================
+            let presidentOfGen = null;
+            // Tách năm từ chuỗi, ví dụ: "Thế hệ II (2024-2025)" -> genStart=2024, genEnd=2025
+            const genMatch = genName.match(/\((\d{4})\s*-\s*(\d{4})\)/);
+            const allPresidents = allMembersData.filter(m => m.isHoiTruong === true);
+
+            if (genMatch) {
+                const genStart = parseInt(genMatch[1]);
+                const genEnd = parseInt(genMatch[2]);
+
+                // Tìm hội trưởng trên toàn hệ thống có nhiệm kì bao phủ khoảng thời gian này
+                // Ví dụ: nhiemki 2025-2027 sẽ bao phủ thế hệ 2025-2026 và 2026-2027
+                presidentOfGen = allPresidents.find(p => {
+                    if (p.nhiemki) {
+                        const termMatch = p.nhiemki.match(/(\d{4})\s*-\s*(\d{4})/);
+                        if (termMatch) {
+                            const termStart = parseInt(termMatch[1]);
+                            const termEnd = parseInt(termMatch[2]);
+                            return (genStart >= termStart && genEnd <= termEnd);
+                        }
+                    }
+                    return false;
+                });
+            }
+
+            // Fallback: Nếu chuỗi không chứa năm hoặc không tìm thấy ai trùng khớp thời gian
+            // thì fallback lại cách tìm người có isHoiTruong=true bên trong đúng chuỗi Thế hệ đó
+            if (!presidentOfGen) {
+                presidentOfGen = filteredMembers.find(m => m.isHoiTruong === true);
+            }
+            // =======================================================================
+
+            const presBadge = document.getElementById('presidentBadge');
+
+            if (presidentOfGen) {
+                presName.textContent = presidentOfGen.memberName;
+                presImg.src = presidentOfGen.linkAnhCnhan || 'https://picsum.photos/seed/default/600/800';
+                presImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = 'https://picsum.photos/seed/default/600/800';
+                };
+
+                // Hiển thị huy hiệu phù hợp
+                if (presidentOfGen.isDuongNhiem) {
+                    presBadge.textContent = "Hội trưởng đương thời";
+                    presBadge.className = "badge bg-warning text-dark px-3 py-2 fs-6 rounded-pill shadow-sm";
+                } else {
+                    presBadge.textContent = "Hội trưởng (Nhiệm kì " + (presidentOfGen.nhiemki || "...") + ")";
+                    presBadge.className = "badge bg-secondary text-white px-3 py-2 fs-6 rounded-pill shadow-sm";
+                }
+
+            } else if (filteredMembers.length > 0) {
+                presName.textContent = filteredMembers[0].memberName + " (Đại diện)";
+                presImg.src = filteredMembers[0].linkAnhCnhan || 'https://picsum.photos/seed/default/600/800';
+                presImg.onerror = function() {
+                    this.onerror = null;
+                    this.src = 'https://picsum.photos/seed/default/600/800';
+                };
+                presBadge.textContent = "Đại diện thế hệ";
+                presBadge.className = "badge bg-info text-dark px-3 py-2 fs-6 rounded-pill shadow-sm";
+            } else {
+                presName.textContent = "Chưa có thông tin";
+                presImg.src = 'https://picsum.photos/seed/default/600/800';
+                presBadge.textContent = "Đang cập nhật";
+                presBadge.className = "badge bg-light text-dark px-3 py-2 fs-6 rounded-pill shadow-sm";
+            }
+
+            currentGenData = filteredMembers;
+            currentPage = 1;
+
+            updatePageView();
+        }
+
+        cboGen.addEventListener('change', function(e) {
+            loadGenerationData(e.target.value);
+        });
+
+        // ================= HÀM RENDER GRID & PHÂN TRANG =================
+        function renderGrid(page) {
+            membersGrid.innerHTML = '';
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const membersToShow = currentGenData.slice(startIndex, endIndex);
+
+            membersToShow.forEach(member => {
+                const imgSrc = member.linkAnhThe || 'https://picsum.photos/seed/default/1280/720';
+                const memberName = member.memberName || 'Chưa cập nhật tên';
+
+                const col = document.createElement('div');
+                col.className = 'col-6 col-md-4 col-lg-3 member-grid-item text-center mb-3';
+
+                col.innerHTML = `
+                    <img src="${imgSrc}" class="zoomable-img shadow-sm" loading="lazy" alt="${memberName}" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='https://picsum.photos/seed/default/1280/720';">
+                    <h6 class="mt-2 fw-bold text-secondary fs-6">${memberName}</h6>
+                `;
+                membersGrid.appendChild(col);
+            });
+        }
+
+        function renderPagination(totalItems, page) {
+            paginationUl.innerHTML = '';
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            if (totalPages <= 1) return;
+
+            const prevLi = document.createElement('li');
+            prevLi.className = `page-item ${page === 1 ? 'disabled' : ''}`;
+            prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)">« Trước</a>`;
+            prevLi.onclick = () => { if(page > 1) { currentPage--; updatePageView(); }};
+            paginationUl.appendChild(prevLi);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const numLi = document.createElement('li');
+                numLi.className = `page-item ${page === i ? 'active' : ''}`;
+                numLi.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
+                numLi.onclick = () => { currentPage = i; updatePageView(); };
+                paginationUl.appendChild(numLi);
+            }
+
+            const nextLi = document.createElement('li');
+            nextLi.className = `page-item ${page === totalPages ? 'disabled' : ''}`;
+            nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)">Sau »</a>`;
+            nextLi.onclick = () => { if(page < totalPages) { currentPage++; updatePageView(); }};
+            paginationUl.appendChild(nextLi);
+        }
+
+        function updatePageView() {
+            renderGrid(currentPage);
+            renderPagination(currentGenData.length, currentPage);
+        }
+        // ================= XỬ LÝ BẢNG VÀNG TIÊU BIỂU =================
+
+        function loadFeaturedMembers(members) {
+            fetch(`${API_BASE_URL}/api/types`)
+                .then(response => response.json())
+                .then(types => {
+                    const container = document.getElementById('featuredMembersContainer');
+                    container.innerHTML = ''; // Xóa trạng thái loading
+
+                    // Hàm hỗ trợ tìm thông tin người được vinh danh theo typeId cụ thể
+                    const getHonorData = (targetTypeId, defaultTitle) => {
+                        const typeRecord = types.find(t => t.typeId === targetTypeId);
+                        if (typeRecord) {
+                            const memberInfo = members.find(m => m.memberId === typeRecord.memberId);
+                            return {
+                                name: memberInfo ? memberInfo.memberName : 'Thành viên ẩn danh',
+                                img: (memberInfo && memberInfo.linkAnhCnhan) ? memberInfo.linkAnhCnhan : 'https://picsum.photos/seed/default/600/800'
+                            };
+                        }
+                        // Nếu chưa có ai đạt danh hiệu này trong DB
+                        return {
+                            name: 'Chưa cập nhật',
+                            img: 'https://picsum.photos/seed/default/600/800'
+                        };
+                    };
+
+                    // Trích xuất chính xác dữ liệu theo 3 mã danh hiệu
+                    const hayNhat = getHonorData('HAYNHAT');
+                    const chamChi = getHonorData('CHAMCHI');
+                    const congHien = getHonorData('CONGHIEN');
+
+                    // Hiển thị ra HTML theo đúng thứ tự 3 cột cố định
+                    container.innerHTML = `
+                        <!-- Ô 1: THÀNH VIÊN HAY NHẤT -->
+                        <div class="col-md-4">
+                            <div class="featured-card badge-trophy">
+                                <div class="featured-icon">🏆</div>
+                                <img src="${hayNhat.img}" class="featured-img zoomable-img" alt="Thành viên hay nhất" referrerpolicy="no-referrer">
+                                <h5 class="fw-bold mb-2 text-dark">${hayNhat.name}</h5>
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm fw-bold">Thành Viên Hay Nhất</span>
+                            </div>
+                        </div>
+
+                        <!-- Ô 2: CHĂM CHỈ NHẤT -->
+                        <div class="col-md-4">
+                            <div class="featured-card badge-hardworking">
+                                <div class="featured-icon">🔥</div>
+                                <img src="${chamChi.img}" class="featured-img zoomable-img" alt="Chăm chỉ nhất" referrerpolicy="no-referrer">
+                                <h5 class="fw-bold mb-2 text-dark">${chamChi.name}</h5>
+                                <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm fw-bold">Chăm Chỉ Nhất</span>
+                            </div>
+                        </div>
+
+                        <!-- Ô 3: CỐNG HIẾN NHIỀU NHẤT -->
+                        <div class="col-md-4">
+                            <div class="featured-card badge-sponsor">
+                                <div class="featured-icon">💰</div>
+                                <img src="${congHien.img}" class="featured-img zoomable-img" alt="Cống hiến nhiều nhất" referrerpolicy="no-referrer">
+                                <h5 class="fw-bold mb-2 text-dark">${congHien.name}</h5>
+                                <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm fw-bold">Cống Hiến Nhiều Nhất</span>
+                            </div>
+                        </div>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Lỗi tải danh hiệu:', error);
+                    document.getElementById('featuredMembersContainer').innerHTML = '<p class="text-center text-danger">Lỗi tải dữ liệu bảng vàng!</p>';
+                });
+        }
+        // ================= XỬ LÝ SỰ KIỆN LIGHTBOX =================
+        const lightbox = document.getElementById('imageLightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+
+        document.body.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('zoomable-img')) {
+                lightboxImg.src = e.target.src;
+                lightbox.classList.add('show');
+            }
+        });
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target !== lightboxImg) {
+                lightbox.classList.remove('show');
+            }
+        });
+    });
+</script>
+<!-- Đảm bảo bạn đã import Bootstrap JS ở trang chủ nhé -->
+<script>
+    document.getElementById('frmLogin').addEventListener('submit', function(e) {
+        e.preventDefault(); // Chặn hành vi load lại trang mặc định của form
+
+        const userId = document.getElementById('loginUserId').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const btnSubmit = document.getElementById('btnLoginSubmit');
+        const errorMsg = document.getElementById('loginErrorMsg');
+
+        // Reset UI
+        errorMsg.style.display = 'none';
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+
+
+
+        fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userId, password: password })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Sai tên đăng nhập hoặc mật khẩu');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 1. Lưu trạng thái đăng nhập vào trình duyệt
+                localStorage.setItem('currentUser', userId);
+
+                // 2. Tắt Form (Modal) đăng nhập mượt mà
+                const modalEl = document.getElementById('loginModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) {
+                    modal.hide();
+                }
+
+                // 3. Xóa trắng dữ liệu vừa nhập trong form để bảo mật
+                document.getElementById('frmLogin').reset();
+
+                // 4. Cập nhật lại nút Đăng nhập thành menu Dropdown (không cần load lại trang)
+                renderAuthUI();
+            })
+            .catch(error => {
+                errorMsg.innerText = error.message;
+                errorMsg.style.display = 'block';
+            })
+            .finally(() => {
+                // Trả lại trạng thái ban đầu cho nút bấm
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Đăng Nhập';
+            });
+    });
+</script>
+<script>
+    // Hàm chạy ngay khi web vừa load xong
+    document.addEventListener("DOMContentLoaded", function() {
+        renderAuthUI();
+    });
+
+    function renderAuthUI() {
+        const authContainer = document.getElementById('authContainer');
+        const currentUser = localStorage.getItem('currentUser'); // Lấy thông tin từ bộ nhớ trình duyệt
+
+        if (currentUser) {
+            // NẾU ĐÃ ĐĂNG NHẬP: Hiển thị Dropdown
+            authContainer.innerHTML = `
+                <div class="dropdown">
+                    <button class="btn btn-primary shadow-sm rounded-pill px-4 dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user-circle me-2"></i> Chào, ${currentUser}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" aria-labelledby="userMenu">
+                        <li><a class="dropdown-item fw-bold text-success py-2" href="admin.html"><i class="fas fa-cogs me-2"></i>Quản lý trang</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item fw-bold text-danger py-2" href="javascript:void(0);" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </div>
+            `;
+        } else {
+            // NẾU CHƯA ĐĂNG NHẬP: Hiển thị nút bật form Modal
+            authContainer.innerHTML = `
+                <button class="btn btn-primary shadow-sm rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập Admin
+                </button>
+            `;
+        }
+    }
+
+    // Hàm xử lý đăng xuất
+    function handleLogout() {
+        localStorage.removeItem('currentUser'); // Xóa "thẻ bài"
+        window.location.reload(); // F5 lại trang, giao diện sẽ tự reset
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+/* Generated using nucleoapp.com */
+/* --------------------------------
+
+Icon colors
+
+-------------------------------- */
+
+.icon {
+  display: inline-block;
+  /* icon primary color */
+  color: #111111;
+  height: 1em;
+  width: 1em;
+}
+
+.icon use {
+  /* icon secondary color - fill */
+  fill: #7ea6f6;
+}
+
+.icon.icon-outline use {
+  /* icon secondary color - stroke */
+  stroke: #7ea6f6;
+}
+
+/* --------------------------------
+
+Change icon size
+
+-------------------------------- */
+
+.icon-xs {
+  height: 0.5em;
+  width: 0.5em;
+}
+
+.icon-sm {
+  height: 0.8em;
+  width: 0.8em;
+}
+
+.icon-lg {
+  height: 1.6em;
+  width: 1.6em;
+}
+
+.icon-xl {
+  height: 2em;
+  width: 2em;
+}
+
+/* -------------------------------- 
+
+Align icon and text 
+
+-------------------------------- */
+
+.icon-text-aligner {
+  /* add this class to parent element that contains icon + text */
+  display: flex;
+  align-items: center;
+}
+
+.icon-text-aligner .icon {
+  color: inherit;
+  margin-right: 0.4em;
+}
+
+.icon-text-aligner .icon use {
+  color: inherit;
+  fill: currentColor;
+}
+
+.icon-text-aligner .icon.icon-outline use {
+  stroke: currentColor;
+}
+
+/* -------------------------------- 
+
+Icon reset values - used to enable color customizations
+
+-------------------------------- */
+
+.icon {
+  fill: currentColor;
+  stroke: none;
+}
+
+.icon.icon-outline {
+  fill: none;
+  stroke: currentColor;
+}
+
+.icon use {
+  stroke: none;
+}
+
+.icon.icon-outline use {
+  fill: none;
+}
+
+/* -------------------------------- 
+
+Stroke effects - Nucleo outline icons
+
+- 16px icons -> up to 1px stroke (16px outline icons do not support stroke changes)
+- 24px, 32px icons -> up to 2px stroke
+- 48px, 64px icons -> up to 4px stroke
+
+-------------------------------- */
+
+.icon-outline.icon-stroke-1 {
+  stroke-width: 1px;
+}
+
+.icon-outline.icon-stroke-2 {
+  stroke-width: 2px;
+}
+
+.icon-outline.icon-stroke-3 {
+  stroke-width: 3px;
+}
+
+.icon-outline.icon-stroke-4 {
+  stroke-width: 4px;
+}
+
+.icon-outline.icon-stroke-1 use,
+.icon-outline.icon-stroke-3 use {
+  -webkit-transform: translateX(0.5px) translateY(0.5px);
+  -moz-transform: translateX(0.5px) translateY(0.5px);
+  -ms-transform: translateX(0.5px) translateY(0.5px);
+  -o-transform: translateX(0.5px) translateY(0.5px);
+  transform: translateX(0.5px) translateY(0.5px);
+}
+
+/* 1. Tạo không gian lề cho thanh Search, Show Entries và Phân trang (bù lại việc card-body bị px-0) */
+.dataTables_wrapper .row:first-child {
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  align-items: center;
+}
+.dataTables_wrapper .row:last-child {
+  padding: 1rem 1.5rem;
+}
+
+/* 2. Căn chỉnh lại ô input Search và Select cho bo góc chuẩn form Soft UI */
+.dataTables_wrapper .form-select,
+.dataTables_wrapper .form-control {
+  border: 1px solid #d2d6da;
+  border-radius: 0.5rem;
+}
+
+/* 3. Chỉnh lại form dropdown lọc ở tiêu đề cột cho gọn gàng, không bị vỡ khung */
+.custom-filter-select {
+  font-weight: 400; /* Bỏ in đậm */
+  text-transform: none; /* Bỏ in hoa */
+  margin-top: 8px;
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  box-shadow: none;
+  min-width: 100px;
+}
+
+/* 4. Đẩy icon sort (mũi tên lên xuống) của DataTables ra xa chữ một chút để không bị dính vào Dropdown */
+table.dataTable>thead>tr>th {
+  padding-right: 30px !important;
+  vertical-align: top;
+}

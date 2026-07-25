@@ -1,0 +1,421 @@
+<!--
+=========================================================
+* Soft UI Dashboard 3 - v1.1.0
+=========================================================
+* Product Page: https://www.creative-tim.com/product/soft-ui-dashboard
+* Copyright 2024 Creative Tim (https://www.creative-tim.com)
+* Licensed under MIT (https://www.creative-tim.com/license)
+* Coded by Creative Tim
+=========================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="/static/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="/static/assets/img/favicon.png">
+    <title>Quản lý danh hiệu - Admin Dashboard</title>
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
+    <!-- Nucleo Icons -->
+    <link href="/static/assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="/static/assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- CSS Files -->
+    <link id="pagestyle" href="/static/assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <style>
+
+    </style>
+    <script>
+        // KIỂM TRA BẢO MẬT: Nếu không có currentUser, đá văng ra index
+        if (!localStorage.getItem('currentUser')) {
+            // alert() sẽ chặn màn hình lại, bắt người dùng phải bấm "OK" mới chạy tiếp
+            alert('Phiên đăng nhập đã hết hạn hoặc bạn chưa đăng nhập. Vui lòng đăng nhập lại!');
+
+            // Dùng window.location.replace() với đường dẫn tương đối.
+            // Hàm này an toàn tuyệt đối khi đưa lên server online và ngăn người dùng bấm nút "Back" quay lại trang admin.
+            // (Nhớ đổi 'index.html' thành 'index_2.html' nếu file trang chủ của bạn đang đặt tên như vậy nhé).
+            window.location.replace('index.html');
+        }
+    </script>
+</head>
+
+<body class="g-sidenav-show bg-gray-100">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3" id="sidenav-main">
+    <div class="sidenav-header">
+        <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+        <a class="navbar-brand m-0" href="#">
+            <img src="/static/assets/img/logo-ct-dark.png" class="navbar-brand-img h-100" alt="main_logo">
+            <span class="ms-1 font-weight-bold">Hệ thống CLB</span>
+        </a>
+    </div>
+    <hr class="horizontal dark mt-0">
+    <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <svg width="12px" height="12px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <title>shop </title>
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g transform="translate(-1716.000000, -439.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                                    <g transform="translate(1716.000000, 291.000000)">
+                                        <g transform="translate(0.000000, 148.000000)">
+                                            <path class="color-background opacity-6" d="M46.7199583,10.7414583 L40.8449583,0.949791667 C40.4909749,0.360605034 39.8540131,0 39.1666667,0 L7.83333333,0 C7.1459869,0 6.50902508,0.360605034 6.15504167,0.949791667 L0.280041667,10.7414583 C0.0969176761,11.0460037 -1.23209662e-05,11.3946378 -1.23209662e-05,11.75 C-0.00758042603,16.0663731 3.48367543,19.5725301 7.80004167,19.5833333 L7.81570833,19.5833333 C9.75003686,19.5882688 11.6168794,18.8726691 13.0522917,17.5760417 C16.0171492,20.2556967 20.5292675,20.2556967 23.494125,17.5760417 C26.4604562,20.2616016 30.9794188,20.2616016 33.94575,17.5760417 C36.2421905,19.6477597 39.5441143,20.1708521 42.3684437,18.9103691 C45.1927731,17.649886 47.0084685,14.8428276 47.0000295,11.75 C47.0000295,11.3946378 46.9030823,11.0460037 46.7199583,10.7414583 Z"></path>
+                                            <path class="color-background" d="M39.198,22.4912623 C37.3776246,22.4928106 35.5817531,22.0149171 33.951625,21.0951667 L33.92225,21.1107282 C31.1430221,22.6838032 27.9255001,22.9318916 24.9844167,21.7998837 C24.4750389,21.605469 23.9777983,21.3722567 23.4960833,21.1018359 L23.4745417,21.1129513 C20.6961809,22.6871153 17.4786145,22.9344611 14.5386667,21.7998837 C14.029926,21.6054643 13.533337,21.3722507 13.0522917,21.1018359 C11.4250962,22.0190609 9.63246555,22.4947009 7.81570833,22.4912623 C7.16510551,22.4842162 6.51607673,22.4173045 5.875,22.2911849 L5.875,44.7220845 C5.875,45.9498589 6.7517757,46.9451667 7.83333333,46.9451667 L19.5833333,46.9451667 L19.5833333,33.6066734 L27.4166667,33.6066734 L27.4166667,46.9451667 L39.1666667,46.9451667 C40.2482243,46.9451667 41.125,45.9498589 41.125,44.7220845 L41.125,22.2822926 C40.4887822,22.4116582 39.8442868,22.4815492 39.198,22.4912623 Z"></path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="nav-link-text ms-1">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="admin.html">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-users text-dark" style="font-size: 14px;"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Quản lý thành viên</span>
+                </a>
+            </li>
+            <!-- Mục menu mới thêm cho Danh Hiệu -->
+            <li class="nav-item">
+                <a class="nav-link active" href="danh-hieu.html">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-trophy text-white" style="font-size: 14px;"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Quản lý danh hiệu</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <!-- Thêm onclick="handleAdminLogout()" và sửa href -->
+                <a class="nav-link" href="javascript:void(0);" onclick="handleAdminLogout()">
+                    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-sign-out-alt text-dark" style="font-size: 14px;"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Đăng xuất</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    <!-- Navbar -->
+    <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur" navbar-scroll="true">
+        <div class="container-fluid py-1 px-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+                    <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Trang chủ</a></li>
+                    <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Quản lý danh hiệu</li>
+                </ol>
+                <h6 class="font-weight-bolder mb-0">Quản lý danh hiệu</h6>
+            </nav>
+            <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                <div class="ms-md-auto pe-md-3 d-flex align-items-center">
+                    <div class="input-group">
+                        <span class="input-group-text text-body"><i class="fas fa-search" aria-hidden="true"></i></span>
+                        <input type="text" class="form-control" placeholder="Tìm kiếm...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- End Navbar -->
+
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                        <h6>Danh sách danh hiệu (r81dmtype)</h6>
+                        <!-- Nút mở Form Thêm Mới -->
+                        <button type="button" class="btn bg-gradient-primary btn-sm mb-0" data-bs-toggle="modal" data-bs-target="#typeModal" onclick="resetForm()">
+                            + Thêm danh hiệu
+                        </button>
+                    </div>
+                    <div class="card-body px-0 pt-0 pb-2">
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0" id="typeTable">
+                                <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-3">Mã Danh Hiệu</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Mã Thành Viên</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Hình Ảnh Minh Họa</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Thao Tác</th>
+                                </tr>
+                                </thead>
+                                <tbody id="typeTableBody">
+                                <!-- Dữ liệu sẽ được load qua JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer pt-3">
+            <div class="container-fluid">
+                <div class="row align-items-center justify-content-lg-between">
+                    <div class="col-lg-6 mb-lg-0 mb-4">
+                        <div class="copyright text-center text-sm text-muted text-lg-start">
+                            © <script>document.write(new Date().getFullYear())</script>,
+                            Hệ thống quản lý nội bộ.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</main>
+
+<!-- Modal Thêm/Sửa Danh Hiệu -->
+<div class="modal fade" id="typeModal" tabindex="-1" role="dialog" aria-labelledby="typeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="typeModalLabel">Thông tin danh hiệu</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="frmR81DmType">
+                    <div class="form-group">
+                        <label for="typeId" class="col-form-label">Mã danh hiệu (type_id):</label>
+                        <input type="text" class="form-control" id="typeId" placeholder="VD: DH001">
+                    </div>
+                    <div class="form-group">
+                        <label for="memberId" class="col-form-label">Mã thành viên (member_id):</label>
+                        <input type="text" class="form-control" id="memberId" placeholder="Nhập mã thành viên được trao danh hiệu...">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkImg" class="col-form-label">Link hình ảnh (link_img):</label>
+                        <input type="text" class="form-control" id="linkImg" placeholder="Nhập URL hình ảnh danh hiệu/chứng nhận...">
+                        <!-- Hiển thị preview nhỏ nếu muốn -->
+                        <div class="mt-2 text-center" id="imgPreviewContainer" style="display: none;">
+                            <img id="imgPreview" src="" alt="Preview" style="max-height: 100px; border-radius: 8px;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn bg-gradient-primary" onclick="saveType()">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Core JS Files -->
+<script src="/static/assets/js/core/popper.min.js"></script>
+<script src="/static/assets/js/core/bootstrap.min.js"></script>
+<script src="/static/assets/js/plugins/perfect-scrollbar.min.js"></script>
+<script src="/static/assets/js/plugins/smooth-scrollbar.min.js"></script>
+<script src="/static/assets/js/soft-ui-dashboard.min.js?v=1.1.0"></script>
+<script src="/static/assets/js/config.js"></script>
+
+<!-- Script điều khiển Modal & Call API cho Danh hiệu -->
+<script>
+    let globalTypesData = [];
+    let dataTableInstance = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        loadTableData();
+
+        // Sự kiện preview ảnh khi nhập link
+        document.getElementById('linkImg').addEventListener('input', function(e) {
+            const url = e.target.value.trim();
+            const container = document.getElementById('imgPreviewContainer');
+            const img = document.getElementById('imgPreview');
+            if(url) {
+                img.src = url;
+                container.style.display = 'block';
+            } else {
+                container.style.display = 'none';
+            }
+        });
+    });
+
+    // 1. Load dữ liệu và khởi tạo Bảng
+    function loadTableData() {
+        fetch(API_BASE_URL + '/api/types')
+            .then(response => response.json())
+            .then(data => {
+                globalTypesData = data;
+
+                if (dataTableInstance) {
+                    dataTableInstance.destroy();
+                }
+
+                const tbody = document.getElementById("typeTableBody");
+                tbody.innerHTML = "";
+
+                data.forEach(item => {
+                    // Cải tiến: Nếu không có link ảnh thì không hiện thẻ img
+                    let imgHtml = '';
+                    if (item.linkImg && item.linkImg.trim() !== '') {
+                        imgHtml = `<img src="${item.linkImg}" alt="Danh hiệu" style="max-height: 50px; border-radius: 8px; object-fit: cover;" referrerpolicy="no-referrer">`;
+                    }
+
+                    const row = `
+            <tr>
+              <td><p class="text-sm font-weight-bold mb-0 ps-3">${item.typeId}</p></td>
+              <td><p class="text-sm font-weight-bold mb-0">${item.memberId}</p></td>
+              <td class="align-middle text-center">
+                ${imgHtml}
+              </td>
+              <td class="align-middle text-center">
+                <a href="javascript:;" class="text-secondary font-weight-bold text-xs me-3"
+                   data-bs-toggle="modal" data-bs-target="#typeModal"
+                   onclick="editType('${item.typeId}', '${item.memberId}', '${item.linkImg || ''}')">
+                  Sửa
+                </a>
+                <a href="javascript:;" class="text-danger font-weight-bold text-xs"
+                   onclick="deleteType('${item.typeId}')">
+                  Xóa
+                </a>
+              </td>
+            </tr>
+          `;
+                    tbody.innerHTML += row;
+                });
+
+                // KÍCH HOẠT DATATABLE
+                dataTableInstance = $('#typeTable').DataTable({
+                    "language": {
+                        "search": "Tìm kiếm nhanh:",
+                        "lengthMenu": "Hiển thị _MENU_ danh hiệu",
+                        "info": "Đang xem _START_ đến _END_ trong tổng số _TOTAL_ danh hiệu",
+                        "paginate": { "next": "Sau", "previous": "Trước" }
+                    }
+                });
+            })
+            .catch(error => console.error('Lỗi khi load danh sách danh hiệu:', error));
+    }
+
+    // 2. Reset Form Thêm mới
+    function resetForm() {
+        document.getElementById("typeModalLabel").innerText = "Thêm danh hiệu mới";
+        document.getElementById("frmR81DmType").reset();
+        document.getElementById('imgPreviewContainer').style.display = 'none';
+
+        const idInput = document.getElementById("typeId");
+        idInput.readOnly = false; // Thêm mới thì cho phép nhập/sửa
+
+        let maxNum = 0;
+        globalTypesData.forEach(item => {
+            if (item.typeId && item.typeId.toUpperCase().startsWith("DH")) {
+                let numPart = parseInt(item.typeId.substring(2));
+                if (!isNaN(numPart) && numPart > maxNum) {
+                    maxNum = numPart;
+                }
+            }
+        });
+        const nextNum = maxNum + 1;
+        idInput.value = "DH" + String(nextNum).padStart(3, '0');
+    }
+
+    // 3. Đổ dữ liệu vào Form khi Sửa
+    function editType(typeId, memberId, linkImg) {
+        document.getElementById("typeModalLabel").innerText = "Cập nhật danh hiệu";
+
+        const idInput = document.getElementById("typeId");
+        idInput.value = typeId;
+        idInput.readOnly = true; // KHÓA LẠI - Không cho phép sửa mã danh hiệu như cũ
+
+        document.getElementById("memberId").value = memberId;
+        document.getElementById("linkImg").value = linkImg;
+
+        // Cải tiến: Ẩn hiện preview ảnh
+        const container = document.getElementById('imgPreviewContainer');
+        const img = document.getElementById('imgPreview');
+        if(linkImg && linkImg.trim() !== '') {
+            img.src = linkImg;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    // 4. Lưu dữ liệu
+    function saveType() {
+        const idInput = document.getElementById("typeId");
+        const typeId = idInput.value.trim();
+        const isEditMode = idInput.readOnly; // Nhận biết đang Sửa dựa vào trạng thái ReadOnly
+
+        if (!typeId) {
+            alert("Lỗi: Mã danh hiệu không được để trống!");
+            idInput.focus();
+            return;
+        }
+
+        const requestData = {
+            typeId: typeId,
+            memberId: document.getElementById("memberId").value,
+            linkImg: document.getElementById("linkImg").value
+        };
+
+        const apiMethod = isEditMode ? 'PUT' : 'POST';
+        const apiUrl = isEditMode ? `${API_BASE_URL}/api/types/${typeId}` : `${API_BASE_URL}/api/types`;
+
+        fetch(apiUrl, {
+            method: apiMethod,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(requestData)
+        })
+            .then(async response => {
+                if(response.ok) {
+                    alert(isEditMode ? "Cập nhật thành công!" : "Thêm danh hiệu thành công!");
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('typeModal'));
+                    modal.hide();
+                    loadTableData();
+                } else {
+                    // CẢI TIẾN: Bắt và hiện luôn mã lỗi để dễ debug
+                    const errMsg = await response.text();
+                    alert(`Thao tác thất bại!\nMã lỗi Http: ${response.status}\nChi tiết: ${errMsg || "Có thể do Mã Thành Viên không tồn tại (Lỗi khóa ngoại) hoặc do CORS."}`);
+                }
+            })
+            .catch(error => {
+                console.error('Lỗi khi lưu:', error);
+                alert("Lỗi kết nối tới Server. Xem F12 (Console) để biết thêm chi tiết.");
+            });
+    }
+
+    // 5. Xóa dữ liệu
+    function deleteType(typeId) {
+        if(confirm(`Bạn có chắc chắn muốn xóa danh hiệu mã ${typeId} không?`)) {
+            fetch(`${API_BASE_URL}/api/types/${typeId}`, { method: 'DELETE' })
+                .then(response => {
+                    if(response.ok) {
+                        alert("Xóa thành công!");
+                        loadTableData();
+                    } else {
+                        alert("Lỗi khi xóa danh hiệu!");
+                    }
+                })
+                .catch(error => console.error('Lỗi API xóa:', error));
+        }
+    }
+</script>
+<script>
+    function handleAdminLogout() {
+        if(confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+            localStorage.removeItem('currentUser'); // Hủy phiên đăng nhập
+            window.location.href = 'index_2.html'; // Chuyển về trang chủ
+        }
+    }
+</script>
+</body>
+</html>

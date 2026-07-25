@@ -1,0 +1,21 @@
+### Thêm thành viên mới
+POST http://localhost:8080/api/members
+Content-Type: application/json
+
+{
+  "tvienId": "TV01",
+  "tvienName": "Phan Vĩnh Khoa",
+  "tier": "S",
+  "ngaySinh": "2000-09-19",
+  "img": ""
+}
+
+### Cấp tài khoản cho thành viên (Chạy cái này sau)
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "userId": "KHOAPV",
+  "password": "matkhau123",
+  "tvienId": "TV01"
+}
