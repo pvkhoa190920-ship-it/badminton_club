@@ -79,3 +79,38 @@ DB_URL=your_database_url
 DB_USERNAME=your_database_username
 DB_PASSWORD=your_database_password
 ```
+## 📡 API Endpoints
+
+### Authentication
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/login` | User login |
+| GET | `/api/auth/me` | Validate authentication token |
+
+### Users
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/users` | Create a user account |
+| GET | `/api/users` | Get all users |
+| PUT | `/api/users/{userId}/password` | Change user password |
+
+### Members
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/members` | Get all members |
+| POST | `/api/members` | Create a member |
+| PUT | `/api/members/{id}` | Update a member |
+| DELETE | `/api/members/{id}` | Delete a member |
+| GET | `/api/members/generations` | Get distinct generations |
+
+### Types
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/types` | Get all types |
+| POST | `/api/types` | Create a type |
+| PUT | `/api/types/{id}` | Update a type |
+| DELETE | `/api/types/{id}` | Delete a type |
