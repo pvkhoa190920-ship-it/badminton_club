@@ -158,3 +158,31 @@ GET /api/auth/me
 ```
 
 The endpoint verifies whether the provided Bearer token is currently valid.
+## 🗄️ Database
+
+The application uses PostgreSQL as the relational database.
+
+### Main Entities
+
+- `User` - Stores user account and authentication information.
+- `Member` - Stores badminton club member information.
+- `DmType` - Stores member type / classification information.
+
+### Data Access
+
+The project uses:
+
+- Spring Data JPA
+- Hibernate
+- Repository pattern
+- JPA Entity mapping
+
+Database configuration is provided through environment variables:
+
+```env
+DB_URL=your_database_url
+DB_USERNAME=your_database_username
+DB_PASSWORD=your_database_password
+```
+
+Sensitive database credentials are excluded from Git using `.gitignore`.
