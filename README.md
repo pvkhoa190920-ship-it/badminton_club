@@ -43,3 +43,39 @@ A web application for managing badminton clubs, members, and related activities.
 ### Deployment
 - Docker
 - Render
+## 📁 Project Structure
+
+```text
+src/main/java/com/badminton/badminton_club
+├── config/          # Spring Security, application configuration
+├── controller/      # REST API controllers
+├── dto/             # Request / Response DTOs
+├── entity/          # JPA entities
+├── exception/       # Exception handling
+├── repository/      # Data access layer
+└── service/         # Business logic
+
+src/main/resources
+├── static/          # CSS, JavaScript, images
+├── templates/       # HTML templates
+└── application.properties
+```
+
+## 🚀 Installation
+
+### 1. Clone repository
+
+```bash
+git clone https://github.com/pvkhoa190920-ship-it/badminton_club.git
+cd badminton_club
+```
+
+### 2. Configure environment variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+DB_URL=your_database_url
+DB_USERNAME=your_database_username
+DB_PASSWORD=your_database_password
+```
