@@ -114,3 +114,47 @@ DB_PASSWORD=your_database_password
 | POST | `/api/types` | Create a type |
 | PUT | `/api/types/{id}` | Update a type |
 | DELETE | `/api/types/{id}` | Delete a type |
+
+## 🔐 Authentication
+
+The application uses Spring Security for authentication and authorization.
+
+### Login
+
+Send a POST request to:
+
+```http
+POST /api/auth/login
+```
+
+Request body:
+
+```json
+{
+  "userId": "your_user_id",
+  "password": "your_password"
+}
+```
+
+A successful login returns an authentication token:
+
+```json
+{
+  "message": "Đăng nhập thành công!",
+  "token": "your_token"
+}
+```
+
+For protected requests, include the token in the request header:
+
+```http
+Authorization: Bearer your_token
+```
+
+### Validate Token
+
+```http
+GET /api/auth/me
+```
+
+The endpoint verifies whether the provided Bearer token is currently valid.
