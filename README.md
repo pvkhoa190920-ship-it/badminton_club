@@ -186,3 +186,38 @@ DB_PASSWORD=your_database_password
 ```
 
 Sensitive database credentials are excluded from Git using `.gitignore`.
+## 🐳 Docker
+
+The application can be containerized and deployed using Docker.
+
+### Build Docker Image
+
+```bash
+docker build -t badminton-club .
+```
+
+### Run Docker Container
+
+```bash
+docker run -p 8080:8080 badminton-club
+```
+
+The application will be available at:
+
+```text
+http://localhost:8080
+```
+
+### Deployment
+
+The application can be deployed to cloud platforms such as Render.
+
+Environment variables should be configured in the deployment environment:
+
+```text
+DB_URL
+DB_USERNAME
+DB_PASSWORD
+```
+
+Database credentials should never be committed to the repository.
